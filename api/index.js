@@ -7,19 +7,28 @@ app.get('/', (c) => {
 })
 
 app.get('/siswa', async (c) => {
-  const { searchTerm = '' } = c.req.query();
+  const { searchTerm = '', filterGender } = c.req.query();
 
   try {
+    // Fetch user data
     const { data: userData, error: userError } = await supabase
       .from('user')
       .select('noIndukSiswa, username, profile_picture_url, banner_url');
 
     if (userError) throw new Error(userError.message);
 
-    const { data: siswaData, error: siswaError } = await supabase.from('siswa').select('*');
+    // Fetch siswa data with optional filtering
+    let query = supabase.from('siswa').select('*');
+
+    if (filterGender !== null) {
+      query = query.eq('gender', parseInt(filterGender, 10));
+    }
+
+    const { data: siswaData, error: siswaError } = await query;
 
     if (siswaError) throw new Error(siswaError.message);
 
+    // Merge user and siswa data
     const mergedData = siswaData
       .map((siswa) => {
         const user = userData.find(
@@ -32,13 +41,14 @@ app.get('/siswa', async (c) => {
           banner_url: user ? user.banner_url : null,
         };
       })
+      // Apply search filter by username
       .filter((siswa) =>
         siswa.username.toLowerCase().includes(searchTerm.toLowerCase())
       );
 
     return c.json(mergedData);
   } catch (error) {
-    return c.json({ message: 'Error fetching data', error: error }, 500);
+    return c.json({ message: 'Error fetching data', error: error.message }, 500);
   }
 });
 
