@@ -1,10 +1,11 @@
 {
-  "type": "module", 
+  "type": "module",
   "scripts": {
     "start": "vercel dev",
     "deploy": "vercel"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.45.3",
     "hono": "^4.4.2"
   },
   "devDependencies": {
