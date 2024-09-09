@@ -1,10 +1,17 @@
 import { Hono } from 'hono'
 import { handle } from 'hono/vercel'
 const app = new Hono().basePath('/api')
+import { cors } from 'hono/cors';
 import { supabase } from '../lib/supabase.js'
 app.get('/', (c) => {
   return c.json({ message: "Congrats! You've deployed Hono to Vercel" })
 })
+
+app.use('*', cors({
+  origin: 'http://localhost:3000', // Replace with your frontend URL
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+}));
+
 
 app.get('/siswa', async (c) => {
   const { searchTerm = '', filterGender } = c.req.query();
@@ -17,10 +24,11 @@ app.get('/siswa', async (c) => {
 
     if (userError) throw new Error(userError.message);
 
-    // Fetch siswa data with optional filtering
+    // Prepare the query for siswa data
     let query = supabase.from('siswa').select('*');
 
-    if (filterGender !== null) {
+    // Validate filterGender and apply filter if valid
+    if (filterGender !== undefined && !isNaN(parseInt(filterGender, 10))) {
       query = query.eq('gender', parseInt(filterGender, 10));
     }
 
