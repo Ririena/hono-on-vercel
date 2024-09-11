@@ -33,3 +33,14 @@ export const loginUser = async (c) => {
     return c.json({ message: 'Error during login', error: error.message }, 500);
   }
 };
+
+export const  signOutUser = async (c) => {
+  try {
+    const {error} = await supabase.auth.signOut()
+
+    if(error) throw new Error(error.message);
+    return c.json({message: 'Log out successful'}, 200);
+  } catch( error) {
+    return c.json({message: 'Error During Log out', error: error.message}, 500);
+  }
+}
