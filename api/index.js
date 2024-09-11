@@ -1,7 +1,7 @@
 import { Hono } from "hono";
 import { handle } from "hono/vercel";
 import { cors } from "hono/cors";
-import { registerUser, loginUser, signOutUser } from "../routes/auth/auth.js";
+import { registerUser, loginUser, signOutUser, requestPasswordReset, resetPassword } from "../routes/auth/auth.js";
 
 const app = new Hono().basePath("/api");
 
@@ -20,9 +20,12 @@ app.get("/", (c) => {
   return c.json({ message: "Congrats! You've deployed Hono to Vercel" });
 });
 
+// Auth
 app.post("/v1/register", registerUser);
 app.post("/v1/login", loginUser);
 app.post("/v1/logout", signOutUser )
+app.post("/v1/request-password-reset", requestPasswordReset);
+app.post("/v1/reset-password", resetPassword);
 
 const handler = handle(app);
 

@@ -44,3 +44,33 @@ export const  signOutUser = async (c) => {
     return c.json({message: 'Error During Log out', error: error.message}, 500);
   }
 }
+
+export const requestPasswordReset = async (c) => {
+  const { email } = await c.req.json();
+
+  try {
+    const { data, error } = await supabase.auth.resetPasswordForEmail(email);
+
+    if (error) throw new Error(error.message);
+
+    return c.json({ message: 'Password reset email sent' });
+  } catch (error) {
+    return c.json({ message: 'Error during password reset request', error: error.message }, 500);
+  }
+};
+
+export const resetPassword = async (c) => {
+  const { newPassword, accessToken } = await c.req.json();
+
+  try {
+    const { error } = await supabase.auth.updateUser(accessToken, {
+      password: newPassword,
+    });
+
+    if (error) throw new Error(error.message);
+
+    return c.json({ message: 'Password reset successful' });
+  } catch (error) {
+    return c.json({ message: 'Error during password reset', error: error.message }, 500);
+  }
+};
