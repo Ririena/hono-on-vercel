@@ -49,7 +49,9 @@ export const requestPasswordReset = async (c) => {
   const { email } = await c.req.json();
 
   try {
-    const { data, error } = await supabase.auth.resetPasswordForEmail(email);
+    const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: 'http://localhost:5173/reset',
+    });
 
     if (error) throw new Error(error.message);
 
