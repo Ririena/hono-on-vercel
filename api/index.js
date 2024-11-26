@@ -21,7 +21,7 @@ app.get("/", (c) => {
   return c.json({ message: "Congrats! You've deployed Hono to Vercel" });
 });
 
-// Auth
+
 app.post("/v1/register", registerUser);
 app.post("/v1/login", loginUser);
 app.post("/v1/logout", signOutUser )
